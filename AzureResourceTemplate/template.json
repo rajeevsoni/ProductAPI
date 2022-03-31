@@ -1,0 +1,341 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverfarms_CentralUSPlan_name": {
+            "defaultValue": "CentralUSPlan",
+            "type": "String"
+        },
+        "sites_NotifierFunction20220330214750_name": {
+            "defaultValue": "NotifierFunction20220330214750",
+            "type": "String"
+        },
+        "serverfarms_ASP_ProductResources_a367_name": {
+            "defaultValue": "ASP-ProductResources-a367",
+            "type": "String"
+        },
+        "smartdetectoralertrules_failure_anomalies___productcreationmailer_name": {
+            "defaultValue": "failure anomalies - productcreationmailer",
+            "type": "String"
+        },
+        "smartdetectoralertrules_failure_anomalies___notifier20220330190737_name": {
+            "defaultValue": "failure anomalies - notifier20220330190737",
+            "type": "String"
+        },
+        "components_notifier20220330190737_externalid": {
+            "defaultValue": "/subscriptions/62839f88-625c-482e-97f3-50025b3dd2c9/resourceGroups/productresources/providers/microsoft.insights/components/notifier20220330190737",
+            "type": "String"
+        },
+        "actiongroups_application_insights_smart_detection_externalid": {
+            "defaultValue": "/subscriptions/62839f88-625c-482e-97f3-50025b3dd2c9/resourceGroups/lighthouse/providers/microsoft.insights/actiongroups/application insights smart detection",
+            "type": "String"
+        },
+        "components_productcreationmailer_externalid": {
+            "defaultValue": "/subscriptions/62839f88-625c-482e-97f3-50025b3dd2c9/resourceGroups/productresources/providers/microsoft.insights/components/productcreationmailer",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "microsoft.alertsmanagement/smartdetectoralertrules",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('smartdetectoralertrules_failure_anomalies___notifier20220330190737_name')]",
+            "location": "global",
+            "properties": {
+                "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
+                "state": "Enabled",
+                "severity": "Sev3",
+                "frequency": "PT1M",
+                "detector": {
+                    "id": "FailureAnomaliesDetector"
+                },
+                "scope": [
+                    "[parameters('components_notifier20220330190737_externalid')]"
+                ],
+                "actionGroups": {
+                    "groupIds": [
+                        "[parameters('actiongroups_application_insights_smart_detection_externalid')]"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "microsoft.alertsmanagement/smartdetectoralertrules",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('smartdetectoralertrules_failure_anomalies___productcreationmailer_name')]",
+            "location": "global",
+            "properties": {
+                "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
+                "state": "Enabled",
+                "severity": "Sev3",
+                "frequency": "PT1M",
+                "detector": {
+                    "id": "FailureAnomaliesDetector"
+                },
+                "scope": [
+                    "[parameters('components_productcreationmailer_externalid')]"
+                ],
+                "actionGroups": {
+                    "groupIds": [
+                        "[parameters('actiongroups_application_insights_smart_detection_externalid')]"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('serverfarms_ASP_ProductResources_a367_name')]",
+            "location": "Central US",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "properties": {
+                "perSiteScaling": false,
+                "elasticScaleEnabled": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0,
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('serverfarms_CentralUSPlan_name')]",
+            "location": "Central US",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "properties": {
+                "perSiteScaling": false,
+                "elasticScaleEnabled": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0,
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('sites_NotifierFunction20220330214750_name')]",
+            "location": "Central US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_CentralUSPlan_name'))]"
+            ],
+            "kind": "functionapp",
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "notifierfunction20220330214750.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "notifierfunction20220330214750.scm.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_CentralUSPlan_name'))]",
+                "reserved": false,
+                "isXenon": false,
+                "hyperV": false,
+                "siteConfig": {
+                    "numberOfWorkers": 1,
+                    "acrUseManagedIdentityCreds": false,
+                    "alwaysOn": false,
+                    "http20Enabled": false,
+                    "functionAppScaleLimit": 200,
+                    "minimumElasticInstanceCount": 0
+                },
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "clientCertMode": "Required",
+                "hostNamesDisabled": false,
+                "customDomainVerificationId": "F9B9ED0093DE0794781B6736279FA09A64777083A064AA039363494FE7864A68",
+                "containerSize": 1536,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": true,
+                "redundancyMode": "None",
+                "storageAccountRequired": false,
+                "keyVaultReferenceIdentity": "SystemAssigned"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_NotifierFunction20220330214750_name'), '/ftp')]",
+            "location": "Central US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_NotifierFunction20220330214750_name'))]"
+            ],
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_NotifierFunction20220330214750_name'), '/scm')]",
+            "location": "Central US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_NotifierFunction20220330214750_name'))]"
+            ],
+            "properties": {
+                "allow": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_NotifierFunction20220330214750_name'), '/web')]",
+            "location": "Central US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_NotifierFunction20220330214750_name'))]"
+            ],
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php"
+                ],
+                "netFrameworkVersion": "v6.0",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "httpLoggingEnabled": false,
+                "acrUseManagedIdentityCreds": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$NotifierFunction20220330214750",
+                "scmType": "None",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "vnetRouteAllEnabled": false,
+                "vnetPrivatePortsCount": 0,
+                "localMySqlEnabled": false,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.0",
+                "ftpsState": "FtpsOnly",
+                "preWarmedInstanceCount": 0,
+                "functionAppScaleLimit": 200,
+                "functionsRuntimeScaleMonitoringEnabled": false,
+                "minimumElasticInstanceCount": 0,
+                "azureStorageAccounts": {}
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_NotifierFunction20220330214750_name'), '/f7ef752cd9f04d47a993f4594efe1fec')]",
+            "location": "Central US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_NotifierFunction20220330214750_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author_email": "N/A",
+                "author": "N/A",
+                "deployer": "ZipDeploy",
+                "message": "Created via a push deployment",
+                "start_time": "2022-03-30T16:20:35.644124Z",
+                "end_time": "2022-03-30T16:20:41.6169068Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/functions",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_NotifierFunction20220330214750_name'), '/SendProductCreatedEvent')]",
+            "location": "Central US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_NotifierFunction20220330214750_name'))]"
+            ],
+            "properties": {
+                "script_root_path_href": "https://notifierfunction20220330214750.azurewebsites.net/admin/vfs/site/wwwroot/SendProductCreatedEvent/",
+                "script_href": "https://notifierfunction20220330214750.azurewebsites.net/admin/vfs/site/wwwroot/bin/NotifierFunction.dll",
+                "config_href": "https://notifierfunction20220330214750.azurewebsites.net/admin/vfs/site/wwwroot/SendProductCreatedEvent/function.json",
+                "test_data_href": "https://notifierfunction20220330214750.azurewebsites.net/admin/vfs/data/Functions/sampledata/SendProductCreatedEvent.dat",
+                "href": "https://notifierfunction20220330214750.azurewebsites.net/admin/functions/SendProductCreatedEvent",
+                "config": {},
+                "language": "DotNetAssembly",
+                "isDisabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2021-03-01",
+            "name": "[concat(parameters('sites_NotifierFunction20220330214750_name'), '/', parameters('sites_NotifierFunction20220330214750_name'), '.azurewebsites.net')]",
+            "location": "Central US",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_NotifierFunction20220330214750_name'))]"
+            ],
+            "properties": {
+                "siteName": "NotifierFunction20220330214750",
+                "hostNameType": "Verified"
+            }
+        }
+    ]
+}

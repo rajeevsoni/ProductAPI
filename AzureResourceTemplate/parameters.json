@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverfarms_CentralUSPlan_name": {
+            "value": null
+        },
+        "sites_NotifierFunction20220330214750_name": {
+            "value": null
+        },
+        "serverfarms_ASP_ProductResources_a367_name": {
+            "value": null
+        },
+        "smartdetectoralertrules_failure_anomalies___productcreationmailer_name": {
+            "value": null
+        },
+        "smartdetectoralertrules_failure_anomalies___notifier20220330190737_name": {
+            "value": null
+        },
+        "components_notifier20220330190737_externalid": {
+            "value": null
+        },
+        "actiongroups_application_insights_smart_detection_externalid": {
+            "value": null
+        },
+        "components_productcreationmailer_externalid": {
+            "value": null
+        }
+    }
+}
